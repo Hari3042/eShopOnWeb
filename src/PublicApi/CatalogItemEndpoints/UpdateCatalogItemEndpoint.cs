@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -13,8 +13,9 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// <summary>
 /// Updates a Catalog Item
 /// </summary>
+[Authorize] // Apply authorization at the class level
 public class UpdateCatalogItemEndpoint : IEndpoint<IResult, UpdateCatalogItemRequest, IRepository<CatalogItem>>
-{ 
+{
     private readonly IUriComposer _uriComposer;
 
     public UpdateCatalogItemEndpoint(IUriComposer uriComposer)
@@ -24,14 +25,12 @@ public class UpdateCatalogItemEndpoint : IEndpoint<IResult, UpdateCatalogItemReq
 
     public void AddRoute(IEndpointRouteBuilder app)
     {
-        app.MapPut("api/catalog-items",
-            [Authorize(Roles = BlazorShared.Authorization.Constants.Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] async
-            (UpdateCatalogItemRequest request, IRepository<CatalogItem> itemRepository) =>
-            {
-                return await HandleAsync(request, itemRepository);
-            })
-            .Produces<UpdateCatalogItemResponse>()
-            .WithTags("CatalogItemEndpoints");
+        app.MapPut("api/catalog-items", async (UpdateCatalogItemRequest request, IRepository<CatalogItem> itemRepository) =>
+        {
+            return await HandleAsync(request, itemRepository);
+        })
+        .Produces<UpdateCatalogItemResponse>()
+        .WithTags("CatalogItemEndpoints");
     }
 
     public async Task<IResult> HandleAsync(UpdateCatalogItemRequest request, IRepository<CatalogItem> itemRepository)
