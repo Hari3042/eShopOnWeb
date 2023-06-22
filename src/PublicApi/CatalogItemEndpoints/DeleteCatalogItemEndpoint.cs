@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -13,18 +13,17 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// <summary>
 /// Deletes a Catalog Item
 /// </summary>
+[Authorize(Roles = BlazorShared.Authorization.Constants.Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class DeleteCatalogItemEndpoint : IEndpoint<IResult, DeleteCatalogItemRequest, IRepository<CatalogItem>>
 {
     public void AddRoute(IEndpointRouteBuilder app)
     {
-        app.MapDelete("api/catalog-items/{catalogItemId}",
-            [Authorize(Roles = BlazorShared.Authorization.Constants.Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] async
-            (int catalogItemId, IRepository<CatalogItem> itemRepository) =>
-            {
-                return await HandleAsync(new DeleteCatalogItemRequest(catalogItemId), itemRepository);
-            })
-            .Produces<DeleteCatalogItemResponse>()
-            .WithTags("CatalogItemEndpoints");
+        app.MapDelete("api/catalog-items/{catalogItemId}", async (int catalogItemId, IRepository<CatalogItem> itemRepository) =>
+        {
+            return await HandleAsync(new DeleteCatalogItemRequest(catalogItemId), itemRepository);
+        })
+        .Produces<DeleteCatalogItemResponse>()
+        .WithTags("CatalogItemEndpoints");
     }
 
     public async Task<IResult> HandleAsync(DeleteCatalogItemRequest request, IRepository<CatalogItem> itemRepository)
