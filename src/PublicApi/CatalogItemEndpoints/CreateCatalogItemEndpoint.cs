@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -15,6 +15,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// <summary>
 /// Creates a new Catalog Item
 /// </summary>
+[Authorize(Roles = BlazorShared.Authorization.Constants.Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemRequest, IRepository<CatalogItem>>
 {
     private readonly IUriComposer _uriComposer;
@@ -26,14 +27,12 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
 
     public void AddRoute(IEndpointRouteBuilder app)
     {
-        app.MapPost("api/catalog-items",
-            [Authorize(Roles = BlazorShared.Authorization.Constants.Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] async
-            (CreateCatalogItemRequest request, IRepository<CatalogItem> itemRepository) =>
-            {
-                return await HandleAsync(request, itemRepository);
-            })
-            .Produces<CreateCatalogItemResponse>()
-            .WithTags("CatalogItemEndpoints");
+        app.MapPost("api/catalog-items", async (CreateCatalogItemRequest request, IRepository<CatalogItem> itemRepository) =>
+        {
+            return await HandleAsync(request, itemRepository);
+        })
+        .Produces<CreateCatalogItemResponse>()
+        .WithTags("CatalogItemEndpoints");
     }
 
     public async Task<IResult> HandleAsync(CreateCatalogItemRequest request, IRepository<CatalogItem> itemRepository)
