@@ -11,7 +11,6 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// <summary>
 /// Get a Catalog Item by Id
 /// </summary>
-[Authorize] // Apply authorization at the class level
 public class CatalogItemGetByIdEndpoint : IEndpoint<IResult, GetByIdCatalogItemRequest, IRepository<CatalogItem>>
 {
     private readonly IUriComposer _uriComposer;
@@ -23,12 +22,13 @@ public class CatalogItemGetByIdEndpoint : IEndpoint<IResult, GetByIdCatalogItemR
 
     public void AddRoute(IEndpointRouteBuilder app)
     {
-        app.MapGet("api/catalog-items/{catalogItemId}", async (int catalogItemId, IRepository<CatalogItem> itemRepository) =>
-        {
-            return await HandleAsync(new GetByIdCatalogItemRequest(catalogItemId), itemRepository);
-        })
-        .Produces<GetByIdCatalogItemResponse>()
-        .WithTags("CatalogItemEndpoints");
+        app.MapGet("api/catalog-items/{catalogItemId}",
+            async (int catalogItemId, IRepository<CatalogItem> itemRepository) =>
+            {
+                return await HandleAsync(new GetByIdCatalogItemRequest(catalogItemId), itemRepository);
+            })
+            .Produces<GetByIdCatalogItemResponse>()
+            .WithTags("CatalogItemEndpoints");
     }
 
     public async Task<IResult> HandleAsync(GetByIdCatalogItemRequest request, IRepository<CatalogItem> itemRepository)
